@@ -1,0 +1,45 @@
+{
+  "name": "gulp-heroku-source-deployer",
+  "version": "0.0.1",
+  "description": "A gulp.js plugin that deploys sources to Heroku",
+  "main": "plugin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesward/gulp-heroku-source-deployer.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "heroku",
+    "deploy"
+  ],
+  "author": {
+    "name": "James Ward",
+    "url": "http://www.jamesward.com/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamesward/gulp-heroku-source-deployer/issues"
+  },
+  "homepage": "https://github.com/jamesward/gulp-heroku-source-deployer",
+  "dependencies": {
+    "gulp-util": "~3.0.5",
+    "request-promise": "~0.4.2",
+    "bluebird": "~2.9.27",
+    "heroku-client": "~1.11.0",
+    "through2": "~0.6.5"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "chai": "~2.3.0",
+    "gulp": "~3.9.0",
+    "gulp-gzip": "^1.1.0",
+    "gulp-jshint": "~1.11.0",
+    "gulp-mocha": "~2.1.0",
+    "gulp-tar": "^1.4.0",
+    "jshint-stylish": "~2.0.0",
+    "mocha": "~2.2.5",
+    "mocha-spec-reporter-async": "~0.5.7"
+  }
+}
