@@ -24,15 +24,20 @@ function deploy(apiToken, appName) {
     var self = this;
 
     // create the sources endpoints
-    heroku.apps(appName).sources().create().then(function(sourceInfo) {
-
+    heroku.post(`/apps/${appName}/sources`).then((sourceInfo) => {
       var doUpload = function(options) {
 
         // upload the file
         rp(options).then(function () {
 
           // create a build
-          heroku.apps(appName).builds().create({source_blob: {url: sourceInfo.source_blob.get_url}}).then(function (buildInfo) {
+          heroku.post(`/apps/${appName}/builds`, {
+            body: {
+              source_blob: {
+                url: sourceInfo.source_blob.get_url
+              },
+            },
+          }).then((buildInfo) => {
             // push the buildInfo into the stream
             self.push(buildInfo);
             cb();
@@ -100,17 +105,16 @@ function buildComplete(apiToken, appName) {
     // get the build result every 5 seconds until it is completed
     // todo: max retries
     var statusPolling = setInterval(function() {
-      heroku.apps(appName).builds(buildInfo.id).result().info().then(function(buildResult) {
-
-        if (buildResult.build.status != 'pending') {
+      heroku.get(`/apps/${appName}/builds/${buildInfo.id}`).then((buildResult) => {
+        if (buildResult.status != 'pending') {
           clearInterval(statusPolling);
         }
 
-        if (buildResult.build.status == 'succeeded') {
+        if (buildResult.status == 'succeeded') {
           self.push(buildResult);
           cb();
         }
-        else if (buildResult.build.status == 'failed') {
+        else if (buildResult.status == 'failed') {
           var lines = '';
           buildResult.lines.forEach(function(lineObj) {
             lines += lineObj.line + '\n';

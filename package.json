@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/jamesward/gulp-heroku-source-deployer",
   "dependencies": {
-    "gulp-util": "~3.0.5",
-    "request-promise": "~0.4.2",
     "bluebird": "~2.9.27",
-    "heroku-client": "~1.11.0",
+    "gulp-util": "~3.0.5",
+    "heroku-client": "^3.0.7",
+    "request-promise": "~0.4.2",
     "through2": "~0.6.5"
   },
   "engines": {
