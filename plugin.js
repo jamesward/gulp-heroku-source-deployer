@@ -1,11 +1,11 @@
 'use strict';
 
-var gutil = require('gulp-util'),
+const gutil = require('gulp-util'),
   PluginError = gutil.PluginError,
   through2 = require('through2'),
   rp = require('request-promise');
 
-var PLUGIN_NAME = 'gulp-heroku-source-deployer';
+const PLUGIN_NAME = 'gulp-heroku-source-deployer';
 
 function deploy(apiToken, appName) {
 
@@ -17,18 +17,17 @@ function deploy(apiToken, appName) {
     throw new PluginError(PLUGIN_NAME, 'Missing appName');
   }
 
-  var heroku = new (require('heroku-client'))({ token: apiToken });
+  const heroku = new (require('heroku-client'))({ token: apiToken });
 
   return through2.obj(function(file, enc, cb) {
-
-    var self = this;
+    const self = this;
 
     // create the sources endpoints
-    heroku.post(`/apps/${appName}/sources`).then((sourceInfo) => {
-      var doUpload = function(options) {
+    heroku.post(`/apps/${appName}/sources`).then(sourceInfo => {
+      const doUpload = options => {
 
         // upload the file
-        rp(options).then(function () {
+        rp(options).then(() => {
 
           // create a build
           heroku.post(`/apps/${appName}/builds`, {
@@ -37,23 +36,23 @@ function deploy(apiToken, appName) {
                 url: sourceInfo.source_blob.get_url
               },
             },
-          }).then((buildInfo) => {
+          }).then(buildInfo => {
             // push the buildInfo into the stream
             self.push(buildInfo);
             cb();
-          }).catch(function (err) {
+          }).catch(err => {
             self.emit('error', new PluginError(PLUGIN_NAME, 'Could not create the build:' + err.body.message));
             return cb();
           });
 
-        }).catch(function (err) {
+        }).catch(err => {
           self.emit('error', new PluginError(PLUGIN_NAME, 'Could not upload source: ' + err));
           return cb();
         });
       };
 
       // upload the file this way, cause if it is piped then it is chunked and S3 doesn't handle chunks
-      var rpOptions = {
+      const rpOptions = {
         method: 'PUT',
         url: sourceInfo.source_blob.put_url
       };
@@ -63,11 +62,9 @@ function deploy(apiToken, appName) {
         doUpload(rpOptions);
       }
       else if (file.isStream()) {
-        var bufs = [];
-        file.contents.on('data', function(chunk) {
-          bufs.push(chunk);
-        });
-        file.contents.on('end', function() {
+        const bufs = [];
+        file.contents.on('data', data => bufs.push(data));
+        file.contents.on('end', () => {
           rpOptions.body = Buffer.concat(bufs);
           doUpload(rpOptions);
         });
@@ -77,7 +74,7 @@ function deploy(apiToken, appName) {
         return cb();
       }
 
-    }).catch(function(err) {
+    }).catch(err => {
       self.emit('error', new PluginError(PLUGIN_NAME, 'Could not create the sources endpoints: ' + err.body.message));
       return cb();
     });
@@ -96,16 +93,15 @@ function buildComplete(apiToken, appName) {
     throw new PluginError(PLUGIN_NAME, 'Missing appName');
   }
 
-  var heroku = new (require('heroku-client'))({ token: apiToken });
+  const heroku = new (require('heroku-client'))({ token: apiToken });
 
   return through2.obj(function(buildInfo, enc, cb) {
-
-    var self = this;
+    const self = this;
 
     // get the build result every 5 seconds until it is completed
     // todo: max retries
-    var statusPolling = setInterval(function() {
-      heroku.get(`/apps/${appName}/builds/${buildInfo.id}`).then((buildResult) => {
+    const statusPolling = setInterval(() => {
+      heroku.get(`/apps/${appName}/builds/${buildInfo.id}`).then(buildResult => {
         if (buildResult.status != 'pending') {
           clearInterval(statusPolling);
         }
@@ -115,14 +111,12 @@ function buildComplete(apiToken, appName) {
           cb();
         }
         else if (buildResult.status == 'failed') {
-          var lines = '';
-          buildResult.lines.forEach(function(lineObj) {
-            lines += lineObj.line + '\n';
-          });
+          const lines = buildResult.lines.reduce((accumulator, currentValue) => accumulator + currentValue + '\n');
           self.emit('error', new PluginError(PLUGIN_NAME, 'Build failed: ' + lines));
           return cb();
         }
-      }).catch(function(err) {
+      }).catch(err => {
+        clearInterval(statusPolling);
         self.emit('error', new PluginError(PLUGIN_NAME, 'Could not get the build result: ' + err.body.message));
         return cb();
       });
