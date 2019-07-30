@@ -1,4 +1,4 @@
-# gulp-atom-downloader
+# Gulp Heroku Source Deployer
 
 ## Usage
 

@@ -1,6 +1,6 @@
 {
   "name": "gulp-heroku-source-deployer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A gulp.js plugin that deploys sources to Heroku",
   "main": "plugin.js",
   "repository": {
