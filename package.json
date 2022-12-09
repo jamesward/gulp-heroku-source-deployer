@@ -36,10 +36,10 @@
     "gulp": "~3.9.0",
     "gulp-gzip": "^1.1.0",
     "gulp-jshint": "~1.11.0",
-    "gulp-mocha": "~2.1.0",
+    "gulp-mocha": "~8.0.0",
     "gulp-tar": "^1.4.0",
     "jshint-stylish": "~2.0.0",
-    "mocha": "~2.2.5",
+    "mocha": "~10.1.0",
     "mocha-spec-reporter-async": "~0.5.7"
   }
 }
